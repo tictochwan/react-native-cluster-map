@@ -25,7 +25,7 @@ export interface IClusterMapProps extends MapViewProps {
   onZoomChange?: (zoom: number) => void;
   renderClusterMarker: (pointCount: number) => ReactNode;
   onMapReady: () => void;
-  onClusterClick: () => void;
+  onClusterClick: (coordinate: Array<{ latitude: number; longitude: number }>) => void;
   onRegionChangeComplete: (region: Region) => void;
 }
 
@@ -105,11 +105,12 @@ export class ClusterMap extends React.PureComponent<
 
   private onClusterMarkerPress = (clusterId: number) => {
     const { isClusterExpandClick, onClusterClick } = this.props;
+    const coordinate = clusterService.clusterMarkers(clusterId);
     if (isClusterExpandClick) {
       const region = clusterService.expandCluster(clusterId);
       this.mapRef.animateToRegion(region, CLUSTER_EXPAND_TIME);
     }
-    onClusterClick && onClusterClick();
+    onClusterClick && onClusterClick(coordinate);
   };
 
   private renderMarkers = () => {

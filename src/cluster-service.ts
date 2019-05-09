@@ -51,6 +51,13 @@ class ClusterService {
     return this.getMarkersRegion(clusterMarkersCoordinates);
   };
 
+  public clusterMarkers = (clusterId: number): Array<{ latitude: number; longitude: number }> => {
+    const clusterMarkers = this.getAllClusterMarkers(clusterId).map(
+      this.getMarkersCoordinates
+    );
+    return clusterMarkers;
+  };
+
   private createGeoJsonFeature = (element: ReactElement): Feature<Point> => ({
     type: 'Feature',
     geometry: {
@@ -123,6 +130,16 @@ class ClusterService {
     clusterId: number
   ): Array<SuperCluster.PointFeature<GeoJsonProperties>> => {
     const clusterChildren = this.superCluster.getChildren(clusterId);
+    if (clusterChildren.length > 1) {
+      return clusterChildren;
+    }
+    return this.getClusterMarkers(clusterChildren[0].id as number);
+  };
+
+  private getAllClusterMarkers = (
+    clusterId: number
+  ): Array<SuperCluster.PointFeature<GeoJsonProperties>> => {
+    const clusterChildren = this.superCluster.getLeaves(clusterId);
     if (clusterChildren.length > 1) {
       return clusterChildren;
     }
